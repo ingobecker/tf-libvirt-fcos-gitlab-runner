@@ -7,10 +7,11 @@ to setup the fedora coreos.
 
 # Getting started
 
-The easiest way to run the module is to use the terraform-libvirt container
-image which includes all terraform-providers and tools required. See the repos
-README.md for more informations on how to build and use it. Once you have built
-the image perform the following steps in order to run the module:
+The easiest way to run the module is to use the
+[terraform-libvirt-fcos-container](https://github.com/ingobecker/terraform-libvirt-fcos-container)
+container image which includes all terraform-providers and tools required. See
+the repos README.md for more informations on how to build and use it. Once you
+have built the image perform the following steps in order to run the module:
 
 ```
 $ git clone https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner.git
