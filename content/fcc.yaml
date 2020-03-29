@@ -1,0 +1,47 @@
+---
+variant: fcos
+version: 1.0.0
+passwd:
+  users:
+    - name: ${user}
+      password_hash: ${password}
+      ssh_authorized_keys: 
+       - ${ssh_key}
+      groups: [ sudo ]
+systemd:
+  units:
+    - name: gitlab-runner-register.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Register and start gitlab-runner container
+        Wants=network-online.target
+        After=network-online.target
+        ConditionPathExists=!/var/lib/gitlab-runner/config.toml
+
+        [Service]
+        Type=oneshot
+        ExecStartPre=mkdir -p /var/lib/gitlab-runner
+        ExecStartPre=-/bin/docker pull gitlab/gitlab-runner:latest
+        ExecStartPre=-/bin/docker run --rm -v /var/lib/gitlab-runner:/etc/gitlab-runner:Z \
+                  gitlab/gitlab-runner:latest register\
+                  --non-interactive \
+                  --url "https://gitlab.com/" \
+                  --registration-token ${gitlab_runner_token} \
+                  --executor "docker" \
+                  --docker-image "docker:19.03.1" \
+                  --docker-privileged \
+                  --description "docker-runner(fcos)" \
+                  --tag-list "docker,fcos" \
+                  --run-untagged="true" \
+                  --docker-volumes "/certs/client"
+        ExecStart=/bin/docker run -d \
+                  --name gitlab-runner \
+                  --restart always \
+                  --volume /var/lib/gitlab-runner:/etc/gitlab-runner:Z \
+                  -v /var/run/docker.sock:/var/run/docker.sock \
+                  gitlab/gitlab-runner:latest
+        StandardOutput=journal
+
+        [Install]
+        WantedBy=multi-user.target

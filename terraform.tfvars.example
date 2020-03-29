@@ -1,0 +1,6 @@
+user                = "core"
+ssh_key             = "ssh-ed25519 AAA..."
+password            = "foobarbaz"
+memory              = 4096
+vcpus               = 1
+gitlab_runner_token = ""
