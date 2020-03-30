@@ -10,6 +10,25 @@ passwd:
       groups: [ sudo ]
 systemd:
   units:
+    - name: selinux-dockersock-policy.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Allow docker container to access the docker socket
+        Wants=network-online.target
+        After=network-online.target
+        ConditionPathExists=!/var/lib/gitlab-runner/config.toml
+
+        [Service]
+        Type=oneshot
+        WorkingDirectory=/root
+        ExecStartPre=curl -L -O https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/raw/master/content/dockersock.pp
+        ExecStartPre=sh -c 'echo 51e5434a7259d3f578deb8dedb03bc98671d704729da00402ffc73bfc63f079b4af4895d22b477062864d001c53bf2cd18901dba82b6bcdc138685bc27cd4f58 dockersock.pp|sha512sum -c'
+        ExecStart=/usr/sbin/semodule -i dockersock.pp
+        StandardOutput=journal
+
+        [Install]
+        WantedBy=multi-user.target
     - name: gitlab-runner-register.service
       enabled: true
       contents: |
