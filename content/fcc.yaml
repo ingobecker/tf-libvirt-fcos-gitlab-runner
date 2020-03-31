@@ -8,27 +8,22 @@ passwd:
       ssh_authorized_keys: 
        - ${ssh_key}
       groups: [ sudo ]
+storage:
+  files:
+    - path: /root/dockersock.pp
+      contents:
+        source: https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/raw/master/content/dockersock.pp
+        verification:
+          hash: sha512-51e5434a7259d3f578deb8dedb03bc98671d704729da00402ffc73bfc63f079b4af4895d22b477062864d001c53bf2cd18901dba82b6bcdc138685bc27cd4f58
+      mode: 0600
+      user:
+        id: 0
+      group:
+        id: 0
 systemd:
   units:
-    - name: selinux-dockersock-policy.service
+    - name: docker.service
       enabled: true
-      contents: |
-        [Unit]
-        Description=Allow docker container to access the docker socket
-        Wants=network-online.target
-        After=network-online.target
-        ConditionPathExists=!/var/lib/gitlab-runner/config.toml
-
-        [Service]
-        Type=oneshot
-        WorkingDirectory=/root
-        ExecStartPre=curl -L -O https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/raw/master/content/dockersock.pp
-        ExecStartPre=sh -c 'echo 51e5434a7259d3f578deb8dedb03bc98671d704729da00402ffc73bfc63f079b4af4895d22b477062864d001c53bf2cd18901dba82b6bcdc138685bc27cd4f58 dockersock.pp|sha512sum -c'
-        ExecStart=/usr/sbin/semodule -i dockersock.pp
-        StandardOutput=journal
-
-        [Install]
-        WantedBy=multi-user.target
     - name: gitlab-runner-register.service
       enabled: true
       contents: |
@@ -40,6 +35,7 @@ systemd:
 
         [Service]
         Type=oneshot
+        ExecStartPre=/usr/sbin/semodule -i /root/dockersock.pp
         ExecStartPre=mkdir -p /var/lib/gitlab-runner
         ExecStartPre=-/bin/docker pull gitlab/gitlab-runner:latest
         ExecStartPre=-/bin/docker run --rm -v /var/lib/gitlab-runner:/etc/gitlab-runner:Z \
