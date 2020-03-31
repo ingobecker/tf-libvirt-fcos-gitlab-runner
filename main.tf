@@ -6,17 +6,16 @@ provider "libvirt" {
 }
 
 locals {
-  ssh_ip_known = length(libvirt_domain.fcos_machine.network_interface[0].addresses) >= 1
   fcc_vars = {
-    password            = bcrypt(var.password)
-    ssh_key             = var.ssh_key
-    user                = var.user
+    password                    = bcrypt(var.password)
+    ssh_key                     = var.ssh_key
+    user                        = var.user
     gitlab_runner_register_args = var.gitlab_runner_register_args
   }
 }
 
 resource "local_file" "fcc_debug" {
-  content      = templatefile("${path.module}/content/fcc.yaml", local.fcc_vars)
+  content  = templatefile("${path.module}/content/fcc.yaml", local.fcc_vars)
   filename = "${path.module}/foo.yaml"
 }
 
@@ -65,11 +64,12 @@ resource "libvirt_domain" "fcos_machine" {
   }
 
   network_interface {
-    network_name = "default"
+    network_name   = "default"
+    wait_for_lease = true
   }
 }
 
 output "ssh-command" {
-  value = local.ssh_ip_known ? "${var.user}@${libvirt_domain.fcos_machine.network_interface[0].addresses[0]}" : "ip not know yet, please 'terraform refresh'"
+  value       = "${var.user}@${libvirt_domain.fcos_machine.network_interface[0].addresses[0]}"
   description = "Reach your VM using this command"
 }

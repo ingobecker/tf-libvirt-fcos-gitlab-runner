@@ -49,9 +49,6 @@ Use the `ssh-command` output variable to get a ssh connection string:
 [deploy@terraform-libvirt]$ terraform output ssh-command
 ```
 
-It might take some time until the ip is known to terraform. In this case,
-run `terraform refresh` until a valid connection string is shown.
-
 Use the following command, to connect to the provisioned VM:
 ```
 [deploy@terraform-libvirt]$ ssh $(terraform output ssh-command)
