@@ -5,19 +5,23 @@ provider "libvirt" {
   uri = "qemu:///system"
 }
 
-data "template_file" "gitlab_runner_fcc" {
-  template = file("${path.module}/content/fcc.yaml")
-
-  vars = {
+locals {
+  ssh_ip_known = length(libvirt_domain.fcos_machine.network_interface[0].addresses) >= 1
+  fcc_vars = {
     password            = bcrypt(var.password)
     ssh_key             = var.ssh_key
     user                = var.user
-    gitlab_runner_token = var.gitlab_runner_token
+    gitlab_runner_register_args = var.gitlab_runner_register_args
   }
 }
 
+resource "local_file" "fcc_debug" {
+  content      = templatefile("${path.module}/content/fcc.yaml", local.fcc_vars)
+  filename = "${path.module}/foo.yaml"
+}
+
 data "ct_config" "gitlab_runner_ign" {
-  content      = data.template_file.gitlab_runner_fcc.rendered
+  content      = templatefile("${path.module}/content/fcc.yaml", local.fcc_vars)
   pretty_print = true
 }
 
@@ -63,10 +67,6 @@ resource "libvirt_domain" "fcos_machine" {
   network_interface {
     network_name = "default"
   }
-}
-
-locals {
-  ssh_ip_known = length(libvirt_domain.fcos_machine.network_interface[0].addresses) >= 1
 }
 
 output "ssh-command" {

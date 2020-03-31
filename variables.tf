@@ -1,6 +1,6 @@
-variable "gitlab_runner_token" {
-  type        = string
-  description = "Token the gitlab-runner uses to register itself."
+variable "gitlab_runner_register_args" {
+  type = map
+  description = "Arguments passed to 'gitlab-runner register' command."
 }
 
 variable "ssh_key" {

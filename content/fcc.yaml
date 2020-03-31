@@ -8,55 +8,44 @@ passwd:
       ssh_authorized_keys: 
        - ${ssh_key}
       groups: [ sudo ]
+    - name: gitlab-runner
 storage:
   files:
-    - path: /root/dockersock.pp
+    - path: /usr/local/bin/gitlab-runner
       contents:
-        source: https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/raw/master/content/dockersock.pp
+        source: https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
         verification:
-          hash: sha512-51e5434a7259d3f578deb8dedb03bc98671d704729da00402ffc73bfc63f079b4af4895d22b477062864d001c53bf2cd18901dba82b6bcdc138685bc27cd4f58
-      mode: 0600
+          hash: sha512-ebf9eb1beb9951a28a1e09063fb18e2b5ab3715aa888239851ba06252230385ca0bec0309a8f2ed8016d1787067753a3ca44cfc0c67a0aa142dfabed9d037396
+      mode: 0700
       user:
         id: 0
       group:
         id: 0
 systemd:
   units:
-    - name: docker.service
-      enabled: true
-    - name: gitlab-runner-register.service
+    - name: gitlab-runner-install.service
       enabled: true
       contents: |
         [Unit]
         Description=Register and start gitlab-runner container
         Wants=network-online.target
         After=network-online.target
-        ConditionPathExists=!/var/lib/gitlab-runner/config.toml
+        ConditionPathExists=!/etc/gitlab-runner/config.toml
 
         [Service]
         Type=oneshot
-        ExecStartPre=/usr/sbin/semodule -i /root/dockersock.pp
-        ExecStartPre=mkdir -p /var/lib/gitlab-runner
-        ExecStartPre=-/bin/docker pull gitlab/gitlab-runner:latest
-        ExecStartPre=-/bin/docker run --rm -v /var/lib/gitlab-runner:/etc/gitlab-runner:Z \
-                  gitlab/gitlab-runner:latest register\
-                  --non-interactive \
-                  --url "https://gitlab.com/" \
-                  --registration-token ${gitlab_runner_token} \
-                  --executor "docker" \
-                  --docker-image "docker:19.03.1" \
-                  --docker-privileged \
-                  --description "docker-runner(fcos)" \
-                  --tag-list "docker,fcos" \
-                  --run-untagged="true" \
-                  --docker-volumes "/certs/client"
-        ExecStart=/bin/docker run -d \
-                  --name gitlab-runner \
-                  --restart always \
-                  --volume /var/lib/gitlab-runner:/etc/gitlab-runner:Z \
-                  -v /var/run/docker.sock:/var/run/docker.sock \
-                  gitlab/gitlab-runner:latest
+        ExecStartPre=/usr/local/bin/gitlab-runner register \
+                  %{~ for k, v in gitlab_runner_register_args ~}
+                  --${k}="${v}" \
+                  %{~ endfor ~}
+                  --non-interactive
+        ExecStartPre=/usr/local/bin/gitlab-runner install \
+                  --user=gitlab-runner \
+                  --working-directory=/home/gitlab-runner
+        ExecStart=/usr/local/bin/gitlab-runner start
         StandardOutput=journal
 
         [Install]
         WantedBy=multi-user.target
+    - name: gitlab-runner.service
+      enabled: true
