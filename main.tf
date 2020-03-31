@@ -64,3 +64,12 @@ resource "libvirt_domain" "fcos_machine" {
     network_name = "default"
   }
 }
+
+locals {
+  ssh_ip_known = length(libvirt_domain.fcos_machine.network_interface[0].addresses) >= 1
+}
+
+output "ssh-command" {
+  value = local.ssh_ip_known ? "${var.user}@${libvirt_domain.fcos_machine.network_interface[0].addresses[0]}" : "ip not know yet, please 'terraform refresh'"
+  description = "Reach your VM using this command"
+}
