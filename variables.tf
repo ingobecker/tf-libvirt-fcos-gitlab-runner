@@ -1,5 +1,5 @@
 variable "gitlab_runner_register_args" {
-  type = map
+  type        = map
   description = "Arguments passed to 'gitlab-runner register' command."
 }
 
