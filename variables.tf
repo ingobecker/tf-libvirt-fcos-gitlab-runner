@@ -27,3 +27,8 @@ variable "vcpus" {
   type        = number
   description = "VCPUs assigned to the VM."
 }
+
+variable "storage" {
+  type        = number
+  description = "Size of the volume assigned to the VM in GB."
+}

@@ -39,6 +39,7 @@ resource "libvirt_volume" "fcos_gitlab_runner" {
   base_volume_id = libvirt_volume.fcos_stable.id
   pool           = "default"
   format         = "qcow2"
+  size           = var.storage * 1024 * 1024 * 1024
 }
 
 resource "libvirt_domain" "fcos_machine" {

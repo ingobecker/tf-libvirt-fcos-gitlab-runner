@@ -3,6 +3,7 @@ ssh_key             = "ssh-ed25519 AAA..."
 password            = "foobarbaz"
 memory              = 4096
 vcpus               = 1
+storage             = 20
 gitlab_runner_register_args = {
   registration-token = "",
   url = "https://gitlab.com/",
