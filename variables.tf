@@ -1,5 +1,15 @@
+variable "gitlab_runner_version" {
+  type        = string
+  description = "Versions of the gitlab runner to download"
+}
+
+variable "gitlab_runner_sha_256" {
+  type        = string
+  description = "Checksum of the gitlab runner binary"
+}
+
 variable "gitlab_runner_register_args" {
-  type        = map
+  type        = map(any)
   description = "Arguments passed to 'gitlab-runner register' command."
 }
 

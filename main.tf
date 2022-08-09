@@ -11,6 +11,8 @@ locals {
     ssh_key                     = var.ssh_key
     user                        = var.user
     gitlab_runner_register_args = var.gitlab_runner_register_args
+    gitlab_runner_version       = var.gitlab_runner_version
+    gitlab_runner_sha_256       = var.gitlab_runner_sha_256
   }
 }
 

@@ -1,6 +1,6 @@
 ---
 variant: fcos
-version: 1.0.0
+version: 1.4.0
 passwd:
   users:
     - name: ${user}
@@ -13,9 +13,9 @@ storage:
   files:
     - path: /usr/local/bin/gitlab-runner
       contents:
-        source: https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+        source: https://s3.amazonaws.com/gitlab-runner-downloads/${gitlab_runner_version}/binaries/gitlab-runner-linux-amd64
         verification:
-          hash: sha512-ebf9eb1beb9951a28a1e09063fb18e2b5ab3715aa888239851ba06252230385ca0bec0309a8f2ed8016d1787067753a3ca44cfc0c67a0aa142dfabed9d037396
+          hash: sha256-${gitlab_runner_sha_256}
       mode: 0755
       user:
         id: 0
