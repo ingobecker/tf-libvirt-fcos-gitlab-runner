@@ -31,7 +31,9 @@ cryptographic signature:
 The image will be placed into the `images` directory and `images/latest.qcow2`
 will always point to the latest image available. Have a look at `variables.tf`
 to see the available configuration options and create a `terraform.tfvars` which
-fits your needs. You can start by using `terraform.tfvars.example`.
+fits your needs. You can start by using `terraform.tfvars.example`. You can look
+up the required SHA256 checksum and released versions on the gitlab-runner
+[release page](https://gitlab.com/gitlab-org/gitlab-runner/-/releases).
 
 Now apply the terraform module:
 
