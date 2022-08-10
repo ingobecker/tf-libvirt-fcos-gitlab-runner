@@ -5,6 +5,14 @@ fedora coreos. `terraform-provider-libvirt` is used to create the VM and
 volumes and an ignition file is created by the `terraform-provider-ct` in order
 to setup the fedora coreos.
 
+The provisioned VM comes with support for the gitlabs experimental
+[podman executor](https://docs.gitlab.com/runner/executors/docker.html#use-podman-to-run-docker-commands-beta)
+enabled by default. Podmans socket/service for the `gitlab-runner` user is enabled
+by default as a user unit using lingering.
+
+You can also configure multiple runners running on one VM with different executors
+via the `gitlab_runners` [input variable](https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/blob/master/terraform.tfvars.example#L14).
+
 # Getting started
 
 The easiest way to run the module is to use the
