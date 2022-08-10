@@ -13,6 +13,11 @@ variable "gitlab_runner_register_args" {
   description = "Arguments passed to 'gitlab-runner register' command."
 }
 
+variable "gitlab_runners" {
+  type = list(map(any))
+  description = "For each entry, call 'gitlab-runner register', add register_args and this runner specific args"
+}
+
 variable "ssh_key" {
   type        = string
   description = "ssh-key to access the provisioned fcos VM."

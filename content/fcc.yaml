@@ -3,12 +3,14 @@ variant: fcos
 version: 1.4.0
 passwd:
   users:
+    - name: gitlab-runner
+      uid: 1000
     - name: ${user}
+      uid: 1001
       password_hash: ${password}
       ssh_authorized_keys: 
        - ${ssh_key}
       groups: [ sudo ]
-    - name: gitlab-runner
 storage:
   files:
     - path: /usr/local/bin/gitlab-runner
@@ -21,6 +23,48 @@ storage:
         id: 0
       group:
         id: 0
+    - path: /var/lib/systemd/linger/gitlab-runner
+      mode: 0644
+
+  directories:
+    - path: /home/gitlab-runner/.config
+      user:
+        name: gitlab-runner
+      group:
+        name: gitlab-runner
+    - path: /home/gitlab-runner/.config/systemd
+      user:
+        name: gitlab-runner
+      group:
+        name: gitlab-runner
+    - path: /home/gitlab-runner/.config/systemd/user
+      user:
+        name: gitlab-runner
+      group:
+        name: gitlab-runner
+    - path: /home/gitlab-runner/.config/systemd/user/default.target.wants
+      mode: 0744
+      user:
+        name: gitlab-runner
+      group:
+        name: gitlab-runner
+
+  links:
+    - path: /home/gitlab-runner/.config/systemd/user/podman.service
+      target: /usr/lib/systemd/user/podman.service
+      mode: 0755
+      user:
+        name: gitlab-runner
+      group:
+        name: gitlab-runner
+      hard: false
+    - path: /home/gitlab-runner/.config/systemd/user/default.target.wants/podman.service
+      target: /usr/lib/systemd/user/podman.service
+      user:
+        name: gitlab-runner
+      group:
+        name: gitlab-runner
+      hard: false
 systemd:
   units:
     - name: gitlab-runner-install.service
@@ -34,11 +78,16 @@ systemd:
 
         [Service]
         Type=oneshot
+        %{~ for runner in gitlab_runners ~}
         ExecStartPre=/usr/local/bin/gitlab-runner register \
                   %{~ for k, v in gitlab_runner_register_args ~}
                   --${k}="${v}" \
                   %{~ endfor ~}
+                  %{~ for rk, rv in runner ~}
+                  --${rk}="${rv}" \
+                  %{~ endfor ~}
                   --non-interactive
+        %{~ endfor ~}
         ExecStartPre=/usr/local/bin/gitlab-runner install \
                   --user=gitlab-runner \
                   --working-directory=/home/gitlab-runner

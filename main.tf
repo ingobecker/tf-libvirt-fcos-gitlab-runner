@@ -13,6 +13,7 @@ locals {
     gitlab_runner_register_args = var.gitlab_runner_register_args
     gitlab_runner_version       = var.gitlab_runner_version
     gitlab_runner_sha_256       = var.gitlab_runner_sha_256
+    gitlab_runners              = var.gitlab_runners
   }
 }
 

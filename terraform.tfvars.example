@@ -9,9 +9,23 @@ gitlab_runner_sha_256 = "903f8626171b7ed3b5f9fe2dddad021604cd0ff7692cf6b429f84ce
 gitlab_runner_register_args = {
   registration-token = "",
   url                = "https://gitlab.com/",
-  executor           = "shell",
-  description        = "shell-runner(fcos)",
-  tag-list           = "shell,fcos",
-  locked             = "false",
-  run-untagged       = "true"
 }
+
+gitlab_runners = [
+  {
+    executor = "shell",
+    description = "shell-runner(fcos)",
+    tag-list = "shell,fcos",
+    locked = "false",
+    run-untagged = "true"
+  },
+  {
+    executor = "docker",
+    description = "podman-runner(fcos)",
+    tag-list = "podman,fcos",
+    locked = "false",
+    run-untagged = "false",
+    docker-host = "unix:///run/user/1000/podman/podman.sock",
+    docker-image = "quay.io/podman/stable"
+  }
+]
