@@ -27,5 +27,17 @@ gitlab_runners = [
     run-untagged = "false",
     docker-host = "unix:///run/user/1000/podman/podman.sock",
     docker-image = "quay.io/podman/stable"
+  },
+  {
+    executor = "docker",
+    description = "podman-in-podman-runner(fcos)",
+    tag-list = "pinp,fcos",
+    locked = "false",
+    run-untagged = "false",
+    docker-host = "unix:///run/user/1000/podman/podman.sock",
+    docker-image = "quay.io/podman/stable"
+    docker-cap-add = "sys_admin,mknod"
+    docker-devices = "/dev/fuse"
+    docker-security-opt = "label=disable"
   }
 ]

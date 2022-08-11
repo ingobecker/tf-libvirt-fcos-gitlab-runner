@@ -84,7 +84,13 @@ systemd:
                   --${k}="${v}" \
                   %{~ endfor ~}
                   %{~ for rk, rv in runner ~}
+                  %{~ if rk == "docker-cap-add" ~}
+                  %{~ for rvi, rvv in split(",", rv) ~}
+                  --${rk}="${rvv}" \
+                  %{~ endfor ~}
+                  %{~ else ~}
                   --${rk}="${rv}" \
+                  %{~ endif ~}
                   %{~ endfor ~}
                   --non-interactive
         %{~ endfor ~}
