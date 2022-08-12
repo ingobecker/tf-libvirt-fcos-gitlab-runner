@@ -67,7 +67,7 @@ Use the following command, to connect to the provisioned VM:
 ## Security
 
 Using the podman in podman executor as outlined in the
-[terraform.tfvars.example](https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/blob/7e3115055ca08fef26edcaccffdd6714ba4cd176/terraform.tfvars.example#L32)
+[terraform.tfvars.example](https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/blob/d6279398989be079c5dbf699a48efd5a9d98b0ee/terraform.tfvars.example#L32)
 requires some additional capabilities and disables SELinux labels which makes
 this executor less secure than a normal podman executor or podman executed from
 the shell executor. Altough the podman which is running inside the podman is
