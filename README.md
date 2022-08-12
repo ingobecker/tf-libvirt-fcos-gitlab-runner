@@ -63,3 +63,13 @@ Use the following command, to connect to the provisioned VM:
 ```
 [deploy@terraform-libvirt]$ ssh $(terraform output ssh-command)
 ```
+
+## Security
+
+Using the podman in podman executor as outlined in the
+[terraform.tfvars.example](https://github.com/ingobecker/tf-libvirt-fcos-gitlab-runner/blob/7e3115055ca08fef26edcaccffdd6714ba4cd176/terraform.tfvars.example#L32)
+requires some additional capabilities and disables SELinux labels which makes
+this executor less secure than a normal podman executor or podman executed from
+the shell executor. Altough the podman which is running inside the podman is
+secure, keep in mind that running potentially harmfull 3rd party images for the
+outer podman might be dangerous.
